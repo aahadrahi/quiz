@@ -1,14 +1,14 @@
 import {React,useEffect,useState} from "react";
 import { Model } from "survey-core";
 import { Survey } from "survey-react-ui";
-import "survey-core/defaultV2.min.css";
+import "../defaultV2.min.css";
 import "../index.css";
-import { json } from "./json";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function SurveyComponent() {
     const navigate = useNavigate();
     const [id, setId] = useState('');
+    const [json, setjson] = useState('');
     useEffect(() => {
     axios.get('http://localhost:8081', { withCredentials: true })
       .then(res => {
@@ -21,14 +21,22 @@ function SurveyComponent() {
       .catch(err => console.log(err));
     }, [navigate]);
     
-    
-    const survey = new Model(json);
-    const quizData = JSON.parse(JSON.stringify(json.pages));
+    useEffect(() => {
+      axios.get('http://localhost:8081/json', { withCredentials: true })
+        .then(res => {
+          if (res.data) {
+            setjson(res.data);
+          }
+        })
+        .catch(err => console.log(err));
+      }, [navigate]);
 
-    survey.onComplete.add((sender, options) => {
+    const survey = new Model(json);
+    if(JSON.stringify(json.pages)){
+      const quizData = JSON.parse(JSON.stringify(json.pages));
+      survey.onComplete.add((sender, options) => {
         const quizResults = sender.data;
         const quizResult = {};
-
         quizData.forEach(page => {
             const radioGroupElementsOnPage = page.elements.filter(element => element.type === 'radiogroup');
             radioGroupElementsOnPage.forEach(element => {
@@ -44,6 +52,7 @@ function SurveyComponent() {
             });
         });
         const score = Object.values(quizResult).filter(Boolean).length;
+        console.log(score)
         axios.post("http://localhost:8081/score",{
          id:id,
          score:score,
@@ -58,6 +67,9 @@ function SurveyComponent() {
 
     });
 
+    }
+ 
+   
     return (<Survey model={survey} />);
 }
 

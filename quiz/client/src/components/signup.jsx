@@ -6,6 +6,7 @@ import { createTheme } from '@mui/material/styles';
 import { useState ,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import image from '../images/login.jpg';  
 import Axios from 'axios';
 
 const theme = createTheme();
@@ -94,21 +95,33 @@ export default function SignUp() {
       }})
      
     } else {
+      if (!validateFullname(fullname)) {
+        setFullnameError(true);
+        return;
+      }
       if (!validateUsername(username)) {
         setUsernameError(true);
-      }
-      if (!validateEmail(email)) {
-        setEmailError(true);
-      }
-      if (!validatePassword(password)) {
-        setPasswordError(true);
+        return;
       }
       if (!validateFathername(fathername)) {
         setFathernameError(true);
+        return;
       }
       if (!validateSelectedOption(selectedOption)) {
         setSelectedOptionError(true);
+        return;
       }
+      if (!validateEmail(email)) {
+        setEmailError(true);
+        return;
+      }
+      if (!validatePassword(password)) {
+        setPasswordError(true);
+        return;
+      }
+     
+    
+     
     }
   };
 
@@ -164,7 +177,7 @@ export default function SignUp() {
         sm={4}
         md={7}
         sx={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1630983358494-96012d838b84?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80)',
+          backgroundImage: `url(${image})`,
           backgroundRepeat: 'no-repeat',
           backgroundColor: (t) =>
             t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -215,7 +228,6 @@ export default function SignUp() {
                   fullWidth
                   id="userName"
                   label="Username"
-                  autoFocus
                   value={username}
                   onChange={handleUsernameChange}
                   error={usernameError}
